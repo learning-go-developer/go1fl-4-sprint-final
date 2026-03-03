@@ -29,13 +29,21 @@ func parsePackage(data string) (int, time.Duration, error) {
 	}
 
 	steps, err := strconv.Atoi(parts[0])
-	if err != nil || steps <= 0 {
-		return 0, 0, errors.New("steps must be positive")
+	if err != nil {
+		return 0, 0, fmt.Errorf("failed to convert %q to int: %w",parts[0], err)
+	}
+
+	if steps <= 0 {
+		return 0, 0, fmt.Errorf("invalid steps: %d (must be positive)", steps)
 	}
 
 	duration, err := time.ParseDuration(parts[1])
-	if err != nil || duration <= 0 {
-		return 0, 0, errors.New("duration must be positive")
+	if err != nil {
+		return 0, 0, fmt.Errorf("failed to parse duration %q: %w",parts[1], err)
+	}
+
+	if duration <= 0 {
+		return 0, 0, fmt.Errorf("invalid duration: %v (must be positive)", duration)
 	}
 
 	return steps, duration, nil
