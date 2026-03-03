@@ -70,14 +70,12 @@ func DayActionInfo(data string, weight, height float64) string {
 	}
 
 	if steps <= 0 {
-		errMsg := errors.New("steps must be positive")
-		log.Println(errMsg)
+		log.Println("steps must be positive")
 		return ""
 	}
 
 	if timeDuration <= 0 {
-		errMsg := errors.New("duration must be positive")
-		log.Println(errMsg)
+		log.Println("duration must be positive")
 		return ""
 	}
 
