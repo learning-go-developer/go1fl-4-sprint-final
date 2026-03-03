@@ -1,12 +1,12 @@
 package spentcalories
 
 import (
+	"errors"
 	"fmt"
 	"log"
-	"time"
-	"strings"
-	"errors"
 	"strconv"
+	"strings"
+	"time"
 )
 
 // Основные константы, необходимые для расчетов.
@@ -66,21 +66,23 @@ func meanSpeed(steps int, height float64, duration time.Duration) float64 {
 // and calories burned for the specified activity, and returns a formatted result string.
 //
 // Parameters:
-//   data string      — input string in the format "3456,Ходьба,3h00m",
-//                      containing the number of steps, activity type, and duration
-//   weight float64   — user's weight in kilograms
-//   height float64   — user's height in meters
+//
+//	data string      — input string in the format "3456,Ходьба,3h00m",
+//	                   containing the number of steps, activity type, and duration
+//	weight float64   — user's weight in kilograms
+//	height float64   — user's height in meters
 //
 // Returns:
-//   string — formatted string with workout information, e.g.:
 //
-//      Тип тренировки: Бег
-//      Длительность: 0.75 ч.
-//      Дистанция: 10.00 км.
-//      Скорость: 13.34 км/ч
-//      Сожгли калорий: 18621.75
+//	string — formatted string with workout information, e.g.:
 //
-//   error  — non-nil if input parsing fails or if an unknown activity type is provided
+//	   Тип тренировки: Бег
+//	   Длительность: 0.75 ч.
+//	   Дистанция: 10.00 км.
+//	   Скорость: 13.34 км/ч
+//	   Сожгли калорий: 18621.75
+//
+//	error  — non-nil if input parsing fails or if an unknown activity type is provided
 //
 // Behavior:
 //   - Calls parseTraining() to extract steps, activity, and duration.
@@ -116,10 +118,10 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 	}
 
 	return fmt.Sprintf(
-		"Тип тренировки: %s\n" +
-			"Длительность: %.2f ч.\n" +
-			"Дистанция: %.2f км.\n" +
-			"Скорость: %.2f км/ч\n" +
+		"Тип тренировки: %s\n"+
+			"Длительность: %.2f ч.\n"+
+			"Дистанция: %.2f км.\n"+
+			"Скорость: %.2f км/ч\n"+
 			"Сожгли калорий: %.2f\n",
 		activity,
 		duration.Hours(),
@@ -130,16 +132,18 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 }
 
 // RunningSpentCalories calculates calories burned during running.
-// 
+//
 // It takes the following parameters:
-//   steps int       — number of steps taken
-//   weight float64  — user's weight in kilograms
-//   height float64  — user's height in meters
-//   duration time.Duration — running duration
+//
+//	steps int       — number of steps taken
+//	weight float64  — user's weight in kilograms
+//	height float64  — user's height in meters
+//	duration time.Duration — running duration
 //
 // It returns two values:
-//   float64 — calories burned during the run
-//   error   — non-nil if input parameters are invalid (e.g., non-positive steps, weight, height, or duration) 
+//
+//	float64 — calories burned during the run
+//	error   — non-nil if input parameters are invalid (e.g., non-positive steps, weight, height, or duration)
 func RunningSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
 	if steps <= 0 {
 		return 0, errors.New("steps must be positive")
@@ -163,14 +167,16 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 // WalkingSpentCalories calculates the number of calories burned during walking.
 //
 // Parameters:
-//   steps int       — number of steps taken
-//   weight float64  — user's weight in kilograms
-//   height float64  — user's height in meters
-//   duration time.Duration — duration of the walk
+//
+//	steps int       — number of steps taken
+//	weight float64  — user's weight in kilograms
+//	height float64  — user's height in meters
+//	duration time.Duration — duration of the walk
 //
 // Returns:
-//   float64 — calories burned during the walk
-//   error   — non-nil if input parameters are invalid (e.g., non-positive steps, weight, height, or duration)
+//
+//	float64 — calories burned during the walk
+//	error   — non-nil if input parameters are invalid (e.g., non-positive steps, weight, height, or duration)
 func WalkingSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
 	if steps <= 0 {
 		return 0, errors.New("steps must be positive")
@@ -187,7 +193,6 @@ func WalkingSpentCalories(steps int, weight, height float64, duration time.Durat
 	if duration <= 0 {
 		return 0, errors.New("duration must be positive")
 	}
-
 
 	return ((weight * meanSpeed(steps, height, duration) * duration.Minutes()) / minInH) * walkingCaloriesCoefficient, nil
 }

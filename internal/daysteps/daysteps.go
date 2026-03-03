@@ -1,12 +1,13 @@
 package daysteps
 
 import (
+	"errors"
 	"fmt"
 	"log"
-	"time"
-	"strings"
 	"strconv"
-	"errors"
+	"strings"
+	"time"
+
 	"github.com/Yandex-Practicum/tracker/internal/spentcalories"
 )
 
@@ -19,8 +20,8 @@ const (
 
 func parsePackage(data string) (int, time.Duration, error) {
 	if data == "" {
-        return 0, 0, errors.New("invalid training data format")
-    }
+		return 0, 0, errors.New("invalid training data format")
+	}
 
 	parts := strings.Split(data, ",")
 	if len(parts) != 2 {
@@ -28,14 +29,22 @@ func parsePackage(data string) (int, time.Duration, error) {
 	}
 
 	steps, err := strconv.Atoi(parts[0])
-    if err != nil || steps <= 0 {
-        return 0, 0, errors.New("steps must be positive")
-    }
+	if err != nil {
+		return 0, 0, fmt.Errorf("failed to convert %q to int: %w",parts[0], err)
+	}
+
+	if steps <= 0 {
+		return 0, 0, fmt.Errorf("invalid steps: %d (must be positive)", steps)
+	}
 
 	duration, err := time.ParseDuration(parts[1])
-    if err != nil || duration <= 0 {
-        return 0, 0, errors.New("duration must be positive")
-    }
+	if err != nil {
+		return 0, 0, fmt.Errorf("failed to parse duration %q: %w",parts[1], err)
+	}
+
+	if duration <= 0 {
+		return 0, 0, fmt.Errorf("invalid duration: %v (must be positive)", duration)
+	}
 
 	return steps, duration, nil
 }
@@ -44,13 +53,15 @@ func parsePackage(data string) (int, time.Duration, error) {
 // and the calories burned, and returns a formatted result string.
 //
 // Parameters:
-//   data string    — input string containing the number of steps and walking duration (e.g., "10000,0h50m")
-//   weight float64 — user's weight in kilograms
-//   height float64 — user's height in meters
+//
+//	data string    — input string containing the number of steps and walking duration (e.g., "10000,0h50m")
+//	weight float64 — user's weight in kilograms
+//	height float64 — user's height in meters
 //
 // Returns:
-//   string — formatted string with step count, distance in km, and calories burned, e.g.:
-//            "Количество шагов: 792.\nДистанция составила 0.51 км.\nВы сожгли 221.33 ккал."
+//
+//	string — formatted string with step count, distance in km, and calories burned, e.g.:
+//	         "Количество шагов: 792.\nДистанция составила 0.51 км.\nВы сожгли 221.33 ккал."
 func DayActionInfo(data string, weight, height float64) string {
 	steps, timeDuration, err := parsePackage(data)
 	if err != nil {
@@ -59,14 +70,12 @@ func DayActionInfo(data string, weight, height float64) string {
 	}
 
 	if steps <= 0 {
-		errMsg := errors.New("steps must be positive")
-		log.Println(errMsg)
+		log.Println("steps must be positive")
 		return ""
 	}
 
 	if timeDuration <= 0 {
-		errMsg := errors.New("duration must be positive")
-		log.Println(errMsg)
+		log.Println("duration must be positive")
 		return ""
 	}
 
@@ -75,8 +84,8 @@ func DayActionInfo(data string, weight, height float64) string {
 	calories, err := spentcalories.WalkingSpentCalories(steps, weight, height, timeDuration)
 	if err != nil {
 		log.Println(err)
-        return ""
-    }
+		return ""
+	}
 
 	return fmt.Sprintf("Количество шагов: %d.\nДистанция составила %.2f км.\nВы сожгли %.2f ккал.\n", steps, distance, calories)
 }
